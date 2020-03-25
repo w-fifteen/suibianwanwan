@@ -1,0 +1,73 @@
+buildscript {
+	ext {
+		springBootVersion = '1.5.8.RELEASE'
+	}
+	repositories {
+		maven{ url 'https://maven.aliyun.com/repository/public'}
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+		classpath('se.transmode.gradle:gradle-docker:1.2')
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'eclipse-wtp'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'war'
+apply plugin: 'docker'
+
+
+group = 'com.fcsc'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+
+repositories {
+	maven{ url 'https://maven.aliyun.com/repository/public'}
+}
+
+configurations {
+	providedRuntime
+}
+
+ext {
+	springCloudVersion = 'Dalston.SR1'
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
+}
+
+dependencies {
+	compile fileTree(include: ['*.jar'], dir: 'libs')
+
+	compile('org.springframework.boot:spring-boot-starter-actuator')
+	compile('org.springframework.boot:spring-boot-starter-aop')
+	compile('org.springframework.boot:spring-boot-starter-data-redis')
+	compile('org.mybatis.spring.boot:mybatis-spring-boot-starter:1.3.1')
+	compile('org.springframework.session:spring-session')
+	compile('org.springframework.boot:spring-boot-starter-web')
+	
+	compile('org.springframework.cloud:spring-cloud-starter-eureka')
+	compile('org.springframework.boot:spring-boot-starter-actuator')
+	
+	runtime('org.springframework.boot:spring-boot-devtools')
+	providedRuntime('org.springframework.boot:spring-boot-starter-tomcat')
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+	
+}
+
+task buildDocker(type: Docker, dependsOn: build) {
+    applicationName = jar.baseName
+    tagVersion = "latest"
+    dockerfile = file('Dockerfile')
+    doFirst {
+        copy {
+            from jar
+            into stageDir
+        }
+    }
+}

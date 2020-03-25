@@ -1,0 +1,40 @@
+server:
+  port: 8080
+logging:
+  config: classpath:logback-spring.xml
+spring:
+  session: 
+    store-type: none
+  profiles:
+    active: dev
+  jmx:
+    default-domain: ${spring.application.name}
+
+  application:
+    name: docker-demo  ##注册服务名字
+  http:
+    multipart:
+      max-file-size: 1000Mb
+      max-request-size: 1000Mb
+      
+endpoints: 
+  restart: 
+    enabled: true
+    sensitive: false
+    
+##eureka注册中心
+eureka:
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ipAddress}:${server.port} 
+    metadata-map:
+      management:
+        port: ${management.port}
+  client:
+#    healthcheck: 
+#      enabled: true
+    service-url:
+      defaultZone: http://111.230.223.91:8761/eureka/
+ribbon: 
+  ReadTimeout: 20000      #请求处理的超时时间
+  ConnectTimeout: 10000   #调用链接超时时间

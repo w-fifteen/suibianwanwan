@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<contextName>logback</contextName>
+	<!--定义日志文件的存储地址 勿在 LogBack 的配置中使用相对路径 -->
+	<property name="LOG_HOME" value="/usr/local/apps/logs" />
+	<property name="appname" value="docker-demo" />
+	<!--%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符 -->
+	<!--写入文件格式 -->
+	<property name="p_file" value="%d | %-5level [%thread] %c [%L] -| %msg %n" />
+
+	<!--当天日期 -->
+	<property name="today" value="%d{yyyy-MM-dd}" />
+	
+	<!--控制台 输出配置-->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%X{userId}] [%X{requestId}] %logger - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+	<!--文件 输出配置 -->
+	<appender name="logFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File charset="UTF-8">${LOG_HOME}/${appname}/info.log</File>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!--生成日志文件名称 -->
+			<FileNamePattern>${LOG_HOME}/${appname}/log/${today}.log</FileNamePattern>
+		</rollingPolicy>
+
+		<!-- 日志输出格式 -->
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<pattern>${p_file}</pattern>
+		</encoder>
+	</appender>
+
+	<!-- 输出日志 -->
+	<root level="info">
+		<appender-ref ref="logFile" />
+		<appender-ref ref="STDOUT" />
+	</root>
+
+</configuration>

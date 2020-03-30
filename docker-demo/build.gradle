@@ -58,6 +58,7 @@ dependencies {
 	providedRuntime('org.springframework.boot:spring-boot-starter-tomcat')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	
+	compile group: 'com.bmuschko', name: 'gradle-docker-plugin', version: '6.3.0'
 }
 
 task buildDocker(type: Docker, dependsOn: build) {
